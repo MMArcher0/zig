@@ -31,23 +31,28 @@ pub fn main() !void {
     a_var += 1;
     printInDebug("a_var", a_var);
 
-    const sixteen_bit: u16 = 0b1111_1111_1111_1111;
-    const eight_bit: u8 = 255;
+    var sixteen_bit: u16 = 0;
+    sixteen_bit -%= 1;
+    const eight_bit: u8 = 83;
 
     std.debug.print("{}\n", .{eight_bit});
     std.debug.print("{}\n", .{sixteen_bit});
 
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    //std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+    const maybe: ?u8 = 25;
+    if (maybe) |value| {
+        std.debug.print("not null{}\n", .{value});
+    } else {
+        std.debug.print("null\n", .{});
+    }
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    //const stdout_file = std.io.getStdOut().writer();
-    //var bw = std.io.bufferedWriter(stdout_file);
-    //const stdout = bw.writer();
-
-    //try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    //try bw.flush(); // Don't forget to flush!
+    switch (eight_bit) {
+        0...50 => std.debug.print("entre 0 e 50\n", .{}),
+        51, 52, 53 => std.debug.print("é 51 52 ou 53\n", .{}),
+        54...80 => |n| std.debug.print("é {}\n", .{n}),
+        81, 82, 83 => |n| {
+            const dobro: u8 = n *| 2;
+            std.debug.print("dobro de {} e {}\n", .{ n, dobro });
+        },
+        else => |n| std.debug.print("{} não faz nada\n", .{n}),
+    }
 }
