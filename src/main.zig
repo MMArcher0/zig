@@ -7,6 +7,30 @@ const std = @import("std");
 const global_const: u8 = 40;
 var global_var: u8 = 0;
 
+const Color = enum {
+    red,
+    green,
+    blue,
+    fn isRed(self: Color) bool {
+        return self == .red;
+    }
+};
+
+const Number = union {
+    int: u8,
+    float: f64,
+};
+
+const Token = union(enum) {
+    keyword_if,
+    keyword_switch: void,
+    digit: usize,
+
+    fn is(self: Token, tag: std.meta.Tag(Token)) bool {
+        return self == tag;
+    }
+};
+
 //funcoes por convencao usa-se camelCase variaveis com snake_case
 fn printInDebug(name: []const u8, value: anytype) void {
     std.debug.print("{s:>10} {any:^10}\t{}\n", .{ name, value, @TypeOf(value) });
@@ -54,5 +78,35 @@ pub fn main() !void {
             std.debug.print("dobro de {} e {}\n", .{ n, dobro });
         },
         else => |n| std.debug.print("{} não faz nada\n", .{n}),
+    }
+
+    var my_color: Color = .green;
+    std.debug.print("{s} is red? {}\n", .{ @tagName(my_color), my_color.isRed() });
+    my_color = .red;
+    std.debug.print("{s} is red? {}\n", .{ @tagName(my_color), my_color.isRed() });
+
+    std.debug.print("{} is the color number\n", .{@intFromEnum(my_color)});
+
+    switch (my_color) {
+        .blue => std.debug.print("is blue\n", .{}),
+        .green => std.debug.print("is green\n", .{}),
+        .red => std.debug.print("is red\n", .{}),
+    }
+
+    var my_num: Number = .{ .int = 12 };
+    std.debug.print("my int is {}\n", .{my_num.int});
+    my_num = .{ .float = 3.1214 };
+    std.debug.print("my float is {}\n", .{my_num.float});
+
+    var tok: Token = .keyword_if;
+
+    std.debug.print("is if{}\n", .{tok.is(.keyword_if)}); //zls mostra erro, mas compila corretamente no .keyword_if
+
+    tok = .{ .digit = 42 };
+
+    switch (tok) {
+        .digit => |v| std.debug.print("is {}\n", .{v}),
+        .keyword_if => std.debug.print("is if\n", .{}),
+        .keyword_switch => std.debug.print("is switch\n", .{}),
     }
 }
