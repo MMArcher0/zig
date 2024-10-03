@@ -58,8 +58,11 @@ pub fn main() !void {
     var sixteen_bit: u16 = 0;
     sixteen_bit -%= 1;
     const eight_bit: u8 = 83;
+    const sixteen_bit_ptr = &sixteen_bit;
+    sixteen_bit_ptr.* +%= 1;
 
     std.debug.print("{}\n", .{eight_bit});
+    std.debug.print("from pointer +1 {}\n", .{sixteen_bit_ptr.*});
     std.debug.print("{}\n", .{sixteen_bit});
 
     const maybe: ?u8 = 25;
@@ -108,5 +111,66 @@ pub fn main() !void {
         .digit => |v| std.debug.print("is {}\n", .{v}),
         .keyword_if => std.debug.print("is if\n", .{}),
         .keyword_switch => std.debug.print("is switch\n", .{}),
+    }
+
+    const a: u8 = 0;
+    const a_ptr = &a;
+    std.debug.print("aptr: {} type of aptr: {}\n", .{ a_ptr.*, @TypeOf(a_ptr) });
+
+    var b: u8 = 0;
+    const b_ptr = &b;
+    b_ptr.* += 1;
+    std.debug.print("bptr: {} type of bptr: {}\n", .{ b_ptr.*, @TypeOf(b_ptr) });
+
+    var c_ptr = a_ptr;
+    c_ptr = b_ptr;
+    std.debug.print("cptr: {} type of cptr: {}\n", .{ c_ptr.*, @TypeOf(c_ptr) });
+
+    var array = [_]u8{ 1, 2, 3, 4, 5, 6 };
+    var d_ptr: [*]u8 = &array;
+    std.debug.print("dptr: {} type of dptr: {}\n", .{ d_ptr[0], @TypeOf(d_ptr) });
+    d_ptr[1] += 1;
+    d_ptr += 1;
+    std.debug.print("dptr: {} type of dptr: {}\n", .{ d_ptr[0], @TypeOf(d_ptr) });
+    d_ptr -= 1;
+    std.debug.print("dptr: {} type of dptr: {}\n", .{ d_ptr[0], @TypeOf(d_ptr) });
+
+    const e_ptr = &array;
+    std.debug.print("eptr: {} type of eptr: {}\n", .{ e_ptr[0], @TypeOf(e_ptr) });
+    e_ptr[1] += 1;
+    std.debug.print("eptr: {} type of eptr: {}\n", .{ e_ptr[1], @TypeOf(e_ptr) });
+    std.debug.print("eptr: {} type of eptr: {}\n", .{ d_ptr[1], @TypeOf(e_ptr) });
+    std.debug.print("eptr len: {}\n", .{e_ptr.len});
+
+    const arr_ptr = array[0..array.len];
+    std.debug.print("type of arrptr: {}\n", .{@TypeOf(arr_ptr)});
+
+    for (array) |v| std.debug.print("tvalue: {}\n", .{v});
+
+    for (d_ptr[0..3]) |v| std.debug.print("tvalue: {}\n", .{v});
+
+    for (d_ptr[0..2], d_ptr[1..3], d_ptr[2..4]) |v1, v2, v3| std.debug.print("triple value: {} {} {}\n", .{ v1, v2, v3 });
+
+    for (0..3) |v| std.debug.print("tvalue: {}\n", .{v});
+
+    const tenqv = [_]?u8{ 1, 2, 3, null, null };
+
+    const sonum = for (tenqv, 0..) |v, i| {
+        if (v == null) break tenqv[0..i];
+    } else tenqv[0..];
+    std.debug.print("num e null: {any}\n", .{tenqv});
+    std.debug.print("so num : {any}\n", .{sonum});
+
+    var i: usize = 0;
+    while (i < 5) : (i += 1) std.debug.print("dentro do while : {}\n", .{i});
+
+    i = 0;
+
+    outer_while: while (true) : (i += 1) {
+        while (i < 10) : (i += 1) {
+            if (i == 4) continue :outer_while;
+            if (i == 6) break :outer_while;
+            std.debug.print("{}", .{i});
+        }
     }
 }
