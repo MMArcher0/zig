@@ -1,4 +1,6 @@
 const std = @import("std");
+const Point = @import("Point.zig");
+const PointGeneric = @import("PointGenetric.zig").PointGeneric(i16);
 
 //Variaveis globais
 // u8 = unsigned 8bit integer
@@ -31,10 +33,30 @@ const Token = union(enum) {
     }
 };
 
+const Namespace = struct {
+    const pi: f64 = 3.141592;
+    var count: usize = 0;
+};
+
 //funcoes por convencao usa-se camelCase variaveis com snake_case
 fn printInDebug(name: []const u8, value: anytype) void {
     std.debug.print("{s:>10} {any:^10}\t{}\n", .{ name, value, @TypeOf(value) });
 }
+
+//const Point = struct {
+//    x: f32,
+//    y: f32 = 0,
+//
+//    fn new(x: f32, y: f32) Point {
+//        return .{ .x = x, .y = y };
+//    }
+//
+//    fn distance(self: Point, other: Point) f32 {
+//        const difx = other.x - self.x;
+//        const dify = other.y - self.y;
+//        return @sqrt(difx * difx + dify * dify);
+//    }
+//};
 
 pub fn main() !void {
 
@@ -173,4 +195,14 @@ pub fn main() !void {
             std.debug.print("{}", .{i});
         }
     }
+    std.debug.print("\n", .{});
+
+    const a_point: PointGeneric = .{ .x = 8, .y = 2 };
+
+    const b_point = PointGeneric.new(3, 4);
+
+    std.debug.print("distance: {d:.1}\n", .{a_point.distance(b_point)});
+
+    std.debug.print("size point: {}\n", .{@sizeOf(Point)});
+    std.debug.print("size namespace: {}\n", .{@sizeOf(Namespace)});
 }
